@@ -13,7 +13,7 @@ function Login({onLogin}){
     const [objSingIn, setSingIn] = useState({username: "", password: "", image: ""});
     const [messageLogin, setMessageLogin] = useState("");
     const [nameFile, setNameFile] = useState("");
-    const [btn_status, setBtnStatus] = useState(true);
+    const [btn_status, setBtnStatus] = useState({input1: true, input2: true});
 
     useEffect(()=>{
         let mypass = JSON.parse(localStorage.getItem('checkBox'))
@@ -71,7 +71,7 @@ function Login({onLogin}){
         reader.readAsDataURL(event.target.files[0]);
         reader.onload = () =>{
             let resltedImg = reader.result;
-            setSingIn({image: resltedImg})
+            setSingIn(obj =>({...obj ,image: resltedImg}))
              let photoName = event.target.files[0].name
             setNameFile(photoName)
         }
@@ -82,29 +82,29 @@ function Login({onLogin}){
         console.log(objSingIn)
     }
 
-    function checkButton(){
-        if(!objSingIn.username.trim()){
-            setBtnStatus(false)
-        }else{
-            setBtnStatus(true)
-        }
+    function checkButton(thestring){
+        let uN = thestring.trim(" ")
+        if(uN.length > 0 ) setBtnStatus({input1:false})
+        else setBtnStatus({input1:false})
+    }
+    function checkButton2(thestring){
+        let uN = thestring.trim(" ")
+        if(uN.length > 0 ) setBtnStatus({input2:false})
+        else setBtnStatus({input2:false})
     }
 
      function changeUsername(e){
         const {username, value} = e.target;
-        setSingIn((prev)=>({
-            ...prev,
-            [username]: value
-        }))
-        checkButton()
+        setSingIn(obj =>({...obj , username: value}))
+        checkButton(value)
      }
      function changePass(e){
         const {password, value} = e.target;
         setSingIn((prev)=>({
             ...prev,
-            [password]: value
+            password: value
         }))
-        checkButton()
+        checkButton2(value)
      }
     return (
         <div className='bodyContainer'>
@@ -188,8 +188,8 @@ function Login({onLogin}){
                     </div>
                     <div className="modal-footer">
                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" className="btn btn-primary" onClick={addUser} disabled={btn_status} >
-                            {btn_status?
+                        <button type="button" className="btn btn-primary" onClick={addUser} disabled={btn_status.input1 && btn_status.input2} >
+                            {(btn_status.input1 == true && btn_status.input2 == true)?
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock-fill" viewBox="0 0 16 16">
                                 <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
                             </svg>:

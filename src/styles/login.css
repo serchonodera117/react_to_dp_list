@@ -15,8 +15,8 @@
     margin-left: auto;
     margin-right: auto;
     display: table;
-    margin-top:  5%;
-    margin-bottom: 5%;
+    margin-top:  2%;
+    margin-bottom: 0%;
     display: flex;
     backdrop-filter: blur(10px);
     box-shadow: var(--shadow-login);
@@ -148,8 +148,10 @@
     }
     .formulary-login{
         height: 10rem;
+        transition: 0.3s ease-in-out;
     }
     .col-left{
+        transition: 0.3s ease-in-out;
         width: 100%;
         height: 10rem;
     }.login-img{
@@ -159,5 +161,6 @@
     }.form-container{
         margin-top:5px;
         height: 45rem;
+        transition: 0.3s ease-in-out;
     }
 }
