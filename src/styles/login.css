@@ -66,6 +66,7 @@
     margin-right: 2rem;
 }
 
+/*Mobile view------------------------------------------------------------------------------------*/
 @media only screen and (max-width:600px){
     .form-container{
         display: block;
@@ -81,6 +82,7 @@
     }.col-right{
         width: 100%;
     }.form-container{
+        margin-top:5px;
         height: 45rem;
     }
 }
