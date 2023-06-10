@@ -1,0 +1,34 @@
+:root{
+    --colorBody: rgb(249, 246, 255);
+    --titleColor: rgb(80, 80, 80);
+    --labelColor: rgb(71, 68, 68);
+}
+*{
+    margin:0;
+}
+.bodyContainer{
+    position: absolute;
+    /* background-color: var(--colorBody); */
+    width: 100%;
+    height: 100%;
+}
+.backgroundContainer{
+    background-image: url(../images/page_bg_login.jpg);
+    background-size: cover;
+}
+
+.title{
+    color:var(--titleColor);
+    font-weight: bold;
+}
+.font{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}.text-centered{
+    text-align: center;
+}
+.label-text{
+    color: var(--labelColor);
+    font-size: 28px;
+}.hidden-checkbox{
+    display: none;
+}

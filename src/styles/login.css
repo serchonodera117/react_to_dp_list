@@ -1,0 +1,86 @@
+:root{
+    --bg-color: rgba(255, 255, 255, 0.37);
+    --shadow-login: 0px 0px 7px 1px rgba(195, 144, 246, 0.819); 
+    --label-btn: rgb(6, 28, 70);
+
+    --card-login-width: 55%;
+    --card-login-height:40rem;
+}
+
+.form-container{
+    background-color: var(--bg-color);
+    width: var(--card-login-width);
+    height: var(--card-login-height);
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    margin-top:  5%;
+    margin-bottom: 5%;
+    display: flex;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-login);
+}
+
+.col-left{
+    width: 35%;
+    height: var(--card-login-height);
+    display: block;
+    overflow: hidden;
+
+}.col-right{
+    width: 65%;
+    padding: 2rem;
+    height: var(--card-login-height);
+}
+
+.login-img{
+    object-fit: cover;
+    width: 100%;
+    transition: 0.3s ease-out;
+    height: var(--card-login-height);
+}
+
+
+.form-container:hover .login-img{
+    scale: 1.1;
+}
+
+.formulary-login {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+    width: 80%;
+    height: 25rem;
+}
+
+.btn-label {
+    background-color: var(--label-btn);
+    color: white;
+    padding: 8px;
+    font-size: 5px;
+    border-radius:50px;
+}
+
+.footer-btn button{
+    margin-left: 2rem;
+    margin-right: 2rem;
+}
+
+@media only screen and (max-width:600px){
+    .form-container{
+        display: block;
+    }
+    .formulary-login{
+        height: 10rem;
+    }
+    .col-left{
+        width: 100%;
+        height: 10rem;
+    }.login-img{
+        object-position: -160px -170px;
+    }.col-right{
+        width: 100%;
+    }.form-container{
+        height: 45rem;
+    }
+}
