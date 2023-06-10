@@ -1,5 +1,7 @@
 import React from 'react';
+import Axios from 'axios';
 import { useState, useEffect } from 'react';
+import defaultUserImage from '../images/default_userimg.png';
 import '../styles/app.css';
 import '../styles/login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -8,6 +10,10 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 function Login({onLogin}){
     const [savePass, setPassSaved] = useState(false);
     const [logData, setLogData] = useState("");
+    const [objSingIn, setSingIn] = useState({username: "", password: "", image: ""});
+    const [messageLogin, setMessageLogin] = useState("");
+    const [nameFile, setNameFile] = useState("");
+    const [btn_status, setBtnStatus] = useState(true);
 
     useEffect(()=>{
         let mypass = JSON.parse(localStorage.getItem('checkBox'))
@@ -24,8 +30,13 @@ function Login({onLogin}){
             setLogData(dataLogin!==null? dataLogin : obj)
             setPassSaved(mypass!==null? mypass : false)
         }
+        setSingIn({
+            username:'',
+            password:'',
+            image: defaultUserImage
+        })
 
-
+        setNameFile("Photo.(jpg/png/webp/gif)")
     },[])
 
     function startLogin(){
@@ -55,6 +66,46 @@ function Login({onLogin}){
 
     }
 
+    function onPhotoSelected(event){
+        let reader = new FileReader();
+        reader.readAsDataURL(event.target.files[0]);
+        reader.onload = () =>{
+            let resltedImg = reader.result;
+            setSingIn({image: resltedImg})
+             let photoName = event.target.files[0].name
+            setNameFile(photoName)
+        }
+    }
+
+
+    function addUser(){
+        console.log(objSingIn)
+    }
+
+    function checkButton(){
+        if(!objSingIn.username.trim()){
+            setBtnStatus(false)
+        }else{
+            setBtnStatus(true)
+        }
+    }
+
+     function changeUsername(e){
+        const {username, value} = e.target;
+        setSingIn((prev)=>({
+            ...prev,
+            [username]: value
+        }))
+        checkButton()
+     }
+     function changePass(e){
+        const {password, value} = e.target;
+        setSingIn((prev)=>({
+            ...prev,
+            [password]: value
+        }))
+        checkButton()
+     }
     return (
         <div className='bodyContainer'>
             <div className="form-container">
@@ -104,19 +155,52 @@ function Login({onLogin}){
 
 
             <div className="modal fade" id="modal-login" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div className="modal-dialog">
-                <div className="modal-content">
-                <div className="modal-header">
-                    <h1 className="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-                    <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div className="modal-body">
-                    ...
-                </div>
-                <div className="modal-footer">
-                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" className="btn btn-primary">Save changes</button>
-                </div>
+            <div className=" modal-dialog">
+                <div className="modal-content modal-color">
+                    <div className="modal-header">
+                        <h1 className="modal-title fs-5" id="exampleModalLabel">Sign in</h1>
+                        <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div className="modal-body">
+                        <form>
+                            <div className='container-profile-img-signin'>
+                                <img className='user-login-image' src={objSingIn.image} alt="userImage"></img>
+                                <label htmlFor="input_userimg" className="btn-choseimg">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-camera" viewBox="0 0 16 16">
+                                     <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1v6zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4H2z"/>
+                                     <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+                                    </svg>
+                                </label>
+                                <input id="input_userimg" onChange={onPhotoSelected} accept=".png, .jpg, .jpeg, .gif, .webp" className="hidden-checkbox" type='file'></input>
+                                <br></br>
+                                <label className='name-file'>{nameFile}</label>
+
+                                <br></br>
+                                <label htmlFor="input_set_username" className=" font">Username</label>
+                                <input id="input__set_username" onChange={changeUsername} type="text" className="form-control" placeholder="userexample117"></input>
+                                <br></br>
+                                <label htmlFor="input_set_password" className=" font">Pasword</label>
+                                <input id="input__set_password" onChange={changePass} type="password" className="form-control" placeholder="*******"></input>
+                                <br></br>
+                        
+                            </div>
+                        </form>
+                    </div>
+                    <div className="modal-footer">
+                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" className="btn btn-primary" onClick={addUser} disabled={btn_status} >
+                            {btn_status?
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock-fill" viewBox="0 0 16 16">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                            </svg>:
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-person-add" viewBox="0 0 16 16">
+                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+                            <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+                          </svg>
+                            }
+                            Save changes
+                        </button>
+                    </div>
                 </div>
             </div>
             </div>
