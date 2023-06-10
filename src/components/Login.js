@@ -79,7 +79,16 @@ function Login({onLogin}){
 
 
     function addUser(){
-        console.log(objSingIn)
+        let url = "https://myfavnime.000webhostapp.com/todo_list/register.php"
+        let data ={
+            'userName': objSingIn.username,
+            'password': objSingIn.password,
+            'imgURL': objSingIn.image
+        }
+        
+        Axios.post(url, JSON.stringify(data)).then(resp=>{
+            console.log(resp)
+        })
     }
 
     function checkButton(thestring){
