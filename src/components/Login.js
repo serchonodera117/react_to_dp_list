@@ -16,14 +16,15 @@ function Login({onLogin}){
             username:'',
             paswd:'',
         }
-        
-        document.getElementById('input_username').value = dataLogin.username
-        document.getElementById('input_password').value = dataLogin.paswd
+        if(dataLogin!==null && mypass!==null){
+            document.getElementById('input_username').value = dataLogin.username
+            document.getElementById('input_password').value = dataLogin.paswd
+            document.getElementById('input_keep_logged').checked = mypass
+            setLogData(dataLogin!==null? dataLogin : obj)
+            setPassSaved(mypass!==null? mypass : false)
+        }
 
-        document.getElementById('input_keep_logged').checked = mypass
 
-        setLogData(dataLogin!==null? dataLogin : obj)
-        setPassSaved(mypass!==null? mypass : false)
     },[])
 
     function startLogin(){
