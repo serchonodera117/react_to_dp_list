@@ -6,7 +6,7 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Home({onLogout}){
-    const [userData, setUserData] = useState({id_user:'', username:'', password:'',});
+    const [userData, setUserData] = useState({id_user:'', username:'', user_img:'', password:'',});
 
     useEffect(()=>{
         let data = JSON.parse(localStorage.getItem('userdata'))
@@ -14,6 +14,7 @@ function Home({onLogout}){
             setUserData(e =>({...e, 
             id_user:data.id_user,
             username: data.username,
+            user_img: data.user_img,
             password: data.password,
             }));
 
@@ -31,13 +32,14 @@ function Home({onLogout}){
         // })
     }
     function closeSession() {
+        localStorage.removeItem('userdata')
         onLogout();
     }
     function a (){console.log(userData)}
     return (
         <div>
             <p>home</p>
-            <button onClick={a}>Log out</button>
+            <button onClick={closeSession}>Log out</button>
         </div>
     );
 }
