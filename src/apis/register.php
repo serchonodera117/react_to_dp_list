@@ -2,9 +2,9 @@
 Header('Access-Control-Allow-Origin: *');
 
 $servername = "localhost";
-$dbname = "id19982650_todo_list";
-$username = "id19982650_serch";
-$password = "Sergio_117";
+$dbname = "";
+$username = "";
+$password = "";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
@@ -23,15 +23,27 @@ if($nombre!='' && $contrasena!='' && $imagenUsuario!=''){
   $sqlVerification = "SELECT * FROM myUser WHERE username='$nombre'";//---consulta
   $result = $conn->query($sqlVerification);
 
- if ($result->num_rows > 0){echo "El nombre $nombre ya existe.";}
+  if ($result->num_rows > 0){
+    $response = array(
+        "message" => "El usuario $nombre ya existe. :(",
+        "status" => 200
+    );
+    echo json_encode ($response);
+}
  else{
      $sql = "INSERT INTO myUser (USERNAME,  user_img, password)
        VALUES ('$nombre',  '$imagenUsuario','$contrasena')";
-        if ($conn->query($sql) === TRUE) {echo "$nombre, se ha registrado con éxito :D";}
+        if ($conn->query($sql) === TRUE) {
+            $response = array(
+                "message" => "$nombre, se ha registrado con éxito :D",
+                "status" => 200
+            );
+            echo json_encode($response);
+    }
         else {echo '{"error: "' . $sql . ' ' . $conn->error.'"}';}
   }
 }
-else{echo "Campos vacíos";}
+else{echo '{"message":"Campos vacíos", "status":200}';}
 
 $conn->close();
 ?>

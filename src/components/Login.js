@@ -14,6 +14,7 @@ function Login({onLogin}){
     const [messageLogin, setMessageLogin] = useState("");
     const [nameFile, setNameFile] = useState("");
     const [btn_status, setBtnStatus] = useState({input1: true, input2: true});
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(()=>{
         let mypass = JSON.parse(localStorage.getItem('checkBox'))
@@ -38,7 +39,7 @@ function Login({onLogin}){
 
         setNameFile("Photo.(jpg/png/webp/gif)")
     },[])
-
+//LOGIN
     function startLogin(){
         let obj = {
             username: document.getElementById('input_username').value,
@@ -77,8 +78,9 @@ function Login({onLogin}){
         }
     }
 
-
+//POST--------------------------------------------------------------------------------------------------------------
     function addUser(){
+        setIsLoading(true)
         let url = "https://myfavnime.000webhostapp.com/todo_list/register.php"
         let data ={
             'userName': objSingIn.username,
@@ -87,10 +89,25 @@ function Login({onLogin}){
         }
         
         Axios.post(url, JSON.stringify(data)).then(resp=>{
-            console.log(resp)
+            if(resp.data.status == 200){
+            let mesage  = resp.data.message
+            console.log(mesage)
+            setSingIn(obj =>({...obj , 
+                username: '',
+                password: '',
+                image: defaultUserImage
+            }))
+            closeModal()
+              setIsLoading(false)
+            }
         })
     }
-
+    
+//VALIDATIONS-----------------------------------------------------------------------------
+    function closeModal(){
+        let myModal =document.getElementById("close_modal")
+        myModal.click()
+    }
     function checkButton(thestring){
         let uN = thestring.trim(" ")
         if(uN.length > 0 ) setBtnStatus({input1:false})
@@ -186,17 +203,23 @@ function Login({onLogin}){
 
                                 <br></br>
                                 <label htmlFor="input_set_username" className=" font">Username</label>
-                                <input id="input__set_username" onChange={changeUsername} type="text" className="form-control" placeholder="userexample117"></input>
+                                <input id="input__set_username" onChange={changeUsername} type="text" className="form-control" placeholder="userexample117" value={objSingIn.username}></input>
                                 <br></br>
                                 <label htmlFor="input_set_password" className=" font">Pasword</label>
-                                <input id="input__set_password" onChange={changePass} type="password" className="form-control" placeholder="*******"></input>
+                                <input id="input__set_password" onChange={changePass} type="password" className="form-control" placeholder="*******" value={objSingIn.password}></input>
                                 <br></br>
-                        
+                                    {isLoading? 
+                                        <div className="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                            <div className="progress-bar progress-bar-striped progress-bar-animated" style={{width: 100 +'%'}}></div>
+                                      </div>
+                                      : <div></div>
+                                    }
                             </div>
                         </form>
+
                     </div>
                     <div className="modal-footer">
-                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="close_modal" type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" className="btn btn-primary" onClick={addUser} disabled={btn_status.input1 && btn_status.input2} >
                             {(btn_status.input1 == true && btn_status.input2 == true)?
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock-fill" viewBox="0 0 16 16">
