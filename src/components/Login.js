@@ -69,6 +69,7 @@ function Login({onLogin, onToast}){
 
         onLogin();
     }
+    
     function requestLogin(){
         let user= objLogIn.username;
         let password= objLogIn.password;
@@ -76,8 +77,12 @@ function Login({onLogin, onToast}){
       
         Axios.get(url).then(resp=>{
             if(resp.data.status == 200 && resp.data.query == 'success'){
+                let userData = resp.data.userdata[0]
                 activateToast(resp.data.message)
+                
+                localStorage.setItem('userdata', JSON.stringify(userData));
                 startLogin();
+
             }else if(resp.data.status == 200 && resp.data.query == 'no'){
                 activateToast(resp.data.message)
             }
