@@ -2,6 +2,8 @@
     --colorBody: rgb(249, 246, 255);
     --titleColor: rgb(80, 80, 80);
     --labelColor: rgb(71, 68, 68);
+    --toastColor: rgba(255, 255, 255, 0.575);
+    --headerToast: rgba(255, 255, 255, 0.5);
 }
 *{
     margin:0;
@@ -31,4 +33,20 @@
     font-size: 28px;
 }.hidden-checkbox{
     display: none;
+}
+.img-toast{
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+    border: 1px solid rgba(175, 122, 122, 0.7)
+}
+.toast{
+    position: absolute;
+    display: table !important;
+    margin-left: 30px;
+    bottom: 30px;
+    backdrop-filter: blur(10px);
+    background-color: var(--toastColor) !important;
+    transform: 0.3s ease-in-out !important;
+    box-shadow: 0 0 7px 2px rgb(226, 253, 230)!important;
 }

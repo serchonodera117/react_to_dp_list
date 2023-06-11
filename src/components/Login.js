@@ -7,7 +7,7 @@ import '../styles/login.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js'
 
-function Login({onLogin}){
+function Login({onLogin, onToast}){
     const [savePass, setPassSaved] = useState(false);
     const [logData, setLogData] = useState("");
     const [objSingIn, setSingIn] = useState({username: "", password: "", image: ""});
@@ -30,7 +30,14 @@ function Login({onLogin}){
             document.getElementById('input_username').value = dataLogin.username
             document.getElementById('input_password').value = dataLogin.paswd
             document.getElementById('input_keep_logged').checked = mypass
-            setLogData(dataLogin!==null? dataLogin : obj)
+            setLogIn(dataLogin!==null? obj =>({
+                ...obj,
+                 username:dataLogin.username,
+                  password:dataLogin.paswd
+                }) : obj=>({...obj,
+                username:dataLogin.username,
+                 password:dataLogin.paswd
+               }))
             setPassSaved(mypass!==null? mypass : false)
         }
         setSingIn({
@@ -62,7 +69,26 @@ function Login({onLogin}){
 
         onLogin();
     }
-
+    function requestLogin(){
+        let user= objLogIn.username;
+        let password= objLogIn.password;
+        let url = `https://myfavnime.000webhostapp.com/todo_list/login.php?nickname=${user}&passwd=${password}` 
+      
+        Axios.get(url).then(resp=>{
+            if(resp.data.status == 200 && resp.data.query == 'success'){
+                activateToast(resp.data.message)
+                startLogin();
+            }else if(resp.data.status == 200 && resp.data.query == 'no'){
+                activateToast(resp.data.message)
+            }
+            else{
+                activateToast("Un error inesperado ha ocurrido, lo sentimos, estamos trabajando en ello :(")
+            }
+        })
+    }
+    function activateToast(responseMessage){
+        onToast(responseMessage);
+    }
     function checkForSavePass(){
         let state = !savePass
         setPassSaved(state)
@@ -93,14 +119,14 @@ function Login({onLogin}){
         Axios.post(url, JSON.stringify(data)).then(resp=>{
             if(resp.data.status == 200){
             let mesage  = resp.data.message
-            console.log(mesage)
             setSingIn(obj =>({...obj , 
                 username: '',
                 password: '',
                 image: defaultUserImage
             }))
-            closeModal()
+             closeModal()
               setIsLoading(false)
+              activateToast(mesage)
             }
         })
     }
@@ -165,7 +191,7 @@ function Login({onLogin}){
                         <br></br>
                         
                         <label htmlFor="input_password" className="label-text font">Pasword</label>
-                        <input id="input_password" onChange={validatePassword} type="password" className="form-control" placeholder="*******" value={onLogin.password}></input>
+                        <input id="input_password" onChange={validatePassword} type="password" className="form-control" placeholder="*******" value={objLogIn.password}></input>
                         <br></br>
                         
                         <label className='btn-label' htmlFor="input_keep_logged" onClick={checkForSavePass}>
@@ -191,7 +217,7 @@ function Login({onLogin}){
                         data-bs-target="#modal-login">
                             Create Account
                             </button>
-                        <button className='btn btn-primary' onClick={startLogin} disabled={(!objLogIn.password.toString().trim() || !objLogIn.username.toString().trim()) ?true:false}>
+                        <button className='btn btn-primary' onClick={requestLogin} disabled={(!objLogIn.password.toString().trim() || !objLogIn.username.toString().trim()) ?true:false}>
                         {
                             (!objLogIn.password.toString().trim() || !objLogIn.username.toString().trim())?
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock-fill" viewBox="0 0 16 16">
@@ -211,7 +237,7 @@ function Login({onLogin}){
                 </div>
             </div>
 
-
+  {/* MODAL REGISTRO DE USUARIOS  */}
             <div className="modal fade" id="modal-login" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div className=" modal-dialog">
                 <div className="modal-content modal-color">
@@ -267,7 +293,7 @@ function Login({onLogin}){
                     </div>
                 </div>
             </div>
-            </div>
+            </div>     
         </div>
     );
 }
