@@ -41,7 +41,52 @@ if($code=="add"){
             );
         echo json_encode($response);
     }
-}else{
+}
+else if($code=="edit"){
+    $id_task = $data['id_task'];
+    $published_date = $data['current_date'];
+    $description = $data['description'];
+    $limit_date = $data['limit_date'];
+    $task_name = $data['task_name'];
+
+    $sql = "UPDATE  tasks SET task_name ='$task_name', description = '$description',
+                             date_published= '$published_date',limit_date= '$limit_date'
+                             WHERE id_task = '$id_task'";
+        if( $conn->query($sql)=== TRUE) {
+            $response = array(
+                "message" => "Producto editado con éxito",
+                "status" => 200
+            );
+            echo json_encode($response);
+        }
+        else {
+            $response = array(
+                "message" => "' . $sql . ' ' . $conn->error.'",
+                "status" => 200
+            );
+            echo json_encode($response);
+        }  
+}
+else if ($code=="delete"){
+        $id_task = $data['id_task'];
+
+        $sql = "DELETE FROM tasks   WHERE id_task = '$id_task'";
+        if( $conn->query($sql)=== TRUE){
+            $response = array(
+                "message" => "Tarea eliminado con éxito",
+                "status" => 200
+            );
+            echo json_encode($response);
+        }
+        else {
+            $response = array(
+            "message" => "' . $sql . ' ' . $conn->error.'",
+            "status" => 200
+            );
+            echo json_encode($response);
+        }  
+}
+else{
       $response = array(
                 "message" => "faltan datos",
                 "status" => 200

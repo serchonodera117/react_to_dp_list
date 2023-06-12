@@ -109,9 +109,11 @@
     display:block;
     margin-left: 20px;
     margin-top: 1rem;
-    width: 85%;
+    width: 30%;
 }
-
+.description-container{
+    width: 55%;
+}
 .btn-plus{
     border-radius: 50px;
     height: 40px;
@@ -174,10 +176,37 @@
 .btn-option{
     transition: 0.5s;
     opacity: 0;
+    width: 2rem;
+    text-align: center;
+    height: 2rem;
     border-radius: 50px;
     border: 0;
     background-color: rgba(252, 233, 255, 0.8);
     box-shadow: 0px 0px 5px 1px rgba(59, 30, 87, 0.664);
+}
+.card-list:has(.check-delete:checked) .btn-delete{
+    opacity: 1;
+    background-color: rgba(148, 104, 104, 0.801);
+    box-shadow: 0px 0px 5px 1px rgba(138, 219, 62, 0.767);
+}
+.confirm-deletion{
+    transition: 0;
+    position: relative;
+    z-index: -1;
+    opacity: 0;
+    transition: 0.3s ease-in-out;
+    float: left;
+    border-radius: 10px;
+    padding: 2px 5px 2px 5px;
+    backdrop-filter: blur(5px);
+    background-color: #811212ab;
+    color: white;
+}
+.card-list:has(.check-delete:checked) .confirm-deletion{
+    opacity: 1;
+    transform: translateX(-150px) translateY(-40px);
+    z-index: 1;
+    display: table;
 }
 .btn-option svg{color: rgba(164, 40, 184, 0.8);}
 .card-list:hover .btn-option{
@@ -185,7 +214,9 @@
     margin-top: 13px;
     transform: translateX(10px);
 }
-
+.number-tasks{
+    color: white;
+}
 .icon-react{
     width:50px;
     height:50px;
@@ -197,7 +228,12 @@
     margin-right: 15px;
 }
 
-
+.task-name{
+    font-size: 20px;
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    color: #947777;
+    font-weight: bold;
+}
 @keyframes checking{
     0%{transform: rotate(0)}
     25%{transform: rotate(45deg);}

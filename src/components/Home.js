@@ -14,6 +14,8 @@ function Home({onLogout, onToast}){
     const [arrayPeticiones, setArrayPeticiones] = useState([])
     const [modalTitle, setModalTitle] = useState('')
     const [httpRequestCode, setHttpRequestCode] = useState('')
+    const [textbutton, setTextButton] = useState('')
+    const [id_task, setIdTask] = useState('x')
     const [taskInfo, setTaskInfo] = useState({
         task_name:'',
         description:'',
@@ -23,6 +25,8 @@ function Home({onLogout, onToast}){
     useEffect(()=>{
         setModalTitle("Add new task")
         setHttpRequestCode('add')
+        setTextButton('Add')
+        setIdTask('x')
         let data = JSON.parse(localStorage.getItem('userdata'))
         if(data!==null){
             setUserData(e =>({...e, 
@@ -31,20 +35,24 @@ function Home({onLogout, onToast}){
             user_img: data.user_img,
             password: data.password,
             }));
-            setArrayPeticiones([1,2,3,4,5,6,7])
-            // setTimeout(()=>{
-            //     getData(data.username, data.id_nickname);
-            // },500)
+             getData(data.id_user);
         } 
         setDate()
     },[])
 
 
-    function getData(nickname, id_nickname){
-        let url = `https://myfavnime.000webhostapp.com/todo_list/login.php?nickname=${nickname}&${id_nickname}=passwd` 
-        // Axios.get(url).then((response)=>{
-
-        // })
+    function getData(id_nickname){
+        let url = `https://myfavnime.000webhostapp.com/todo_list/task_list.php?id_user=${id_nickname}` 
+        Axios.get(url).then((response)=>{
+            if(response.data.status == 200){
+                let tasks = response.data.tasks.reverse();
+                setArrayPeticiones(tasks)
+                if(tasks.length <1){
+                    setOnToast(response.data.message)
+                }
+            }
+            
+        })
     }
 
     function closeSession() {
@@ -80,8 +88,23 @@ function Home({onLogout, onToast}){
         if(obj.type == "add"){
             setHttpRequestCode('add')
             setModalTitle(Title)
+            setTextButton('Add')
+            setTaskInfo(task =>({...task, 
+                task_name: '',
+                description: '',
+                limit_date:''
+            }))
         }else if(obj.type=="edit"){
+            setModalTitle(Title)
+            setTextButton('Edit')
+            setIdTask(obj.id_task)
             setHttpRequestCode('edit')
+
+            setTaskInfo(task =>({...task, 
+                task_name: obj.task_name,
+                description: obj.description,
+                limit_date: obj.limit_date
+            }))
         }else if(obj.type='delete'){
             setHttpRequestCode('delete')
         }
@@ -93,6 +116,7 @@ function Home({onLogout, onToast}){
         let close_button = document.getElementById('close_btn')
         let data = {
             code: httpRequestCode,
+            id_task: id_task,
             id_usuario: userData.id_user,
             task_name: taskInfo.task_name,
             description: taskInfo.description,
@@ -102,10 +126,38 @@ function Home({onLogout, onToast}){
 
         Axios.post(url, JSON.stringify(data)).then((response) =>{
             if(response.data.status == 200){
-                setOnToast(response.data.message)
                 close_button.click()
+                setTimeout(()=>{
+                    setOnToast(response.data.message)
+                    setTaskInfo(obj =>({
+                        ...obj,
+                        task_name:'',
+                        description:'',
+                        current_date:'',
+                        limit_date:''
+                    }))
+                },500)
+                setTimeout(()=>{
+                    getData(userData.id_user)
+                },700)
             }
         })
+     }
+
+     function deleteTask(id){
+        let url = `https://myfavnime.000webhostapp.com/todo_list/tasks.php`
+        let data ={
+            code: httpRequestCode,
+            id_task: id
+        }
+       Axios.post(url, JSON.stringify(data)).then((response) =>{
+          if(response.data.status == 200){
+            setOnToast(response.data.message)
+            setTimeout(()=>{
+                getData(userData.id_user)
+            },700)
+          }
+       })
 
      }
     return (
@@ -120,7 +172,8 @@ function Home({onLogout, onToast}){
                 </button>
                 <img className='user-img' alt="user_pic.png" src={userData.user_img}></img>
                 <br></br>
-                <label className='title font color-username'>{userData.username}</label>
+                <label className='title font color-username'>{userData.username}</label> <br></br>
+                <small className='number-tasks'>{arrayPeticiones.length} tasks</small>
             </div>
             <div className="card-container">
                 <div className="card-header">
@@ -132,24 +185,38 @@ function Home({onLogout, onToast}){
                     {arrayPeticiones.map((element,index)=>(
                                <div className="card-list" key={index}>
                                <div className="data-name-container">
-                                   <span>Fecha</span><br></br>
-                                   <span>Nombre tarea</span>
+                                   <span>{element.date_published}</span><br></br>
+                                   <span className="task-name">{element.task_name}</span>
+                               </div>
+                               <div className="description-container">
+                                   <span>Limit: {element.limit_date}</span><br></br>
+                                   <span>{element.description}</span>
                                </div>
                                <div className='container-options'>
                                    <img  className='icon-react' src={logo}></img>
                                    
-                                   <button className='btn-option'>
+                                   <label htmlFor="check-modal" onClick={() => (changeModalTitle("Edit task", {
+                                    type: 'edit', 
+                                    id_task: element.id_task,
+                                    task_name: element.task_name,
+                                    description: element.description,
+                                    limit_date: element.limit_date
+                                    }))} className='btn-option'>
                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil" viewBox="0 0 16 16">
                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
                                    </svg>
-                                   </button>
+                                   </label>
                                    <br></br>
-                                   <button className='btn-option'>
-                                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
-                                   <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
-                                   <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
-                                   </svg>
-                                   </button>
+                                   <label htmlFor={"task-"+element.id_task} onClick={()=>(changeModalTitle("delete",{type:"delete"}))} className='btn-option btn-delete'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash" viewBox="0 0 16 16">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                                        </svg>
+                                   </label>
+                                   <label htmlFor={"task-"+element.id_task} className='confirm-deletion' onClick={() =>(deleteTask(element.id_task))}>
+                                        Confirm Delete
+                                   </label>
+                                   <input id={"task-"+element.id_task} className='hidden-checkbox check-delete' type="checkbox"></input>
                                </div> 
                            </div>
                         )
@@ -178,8 +245,8 @@ function Home({onLogout, onToast}){
                             placeholder="Task one" value={taskInfo.task_name}></input>
                             <br></br>
                             <label htmlFor="input_description" className=" font">Description</label>
-                            <textarea id="input_description"  type="text" 
-                            className="form-control" onChange={addDescription} placeholder="This is the task one" value={taskInfo.descrition}></textarea>
+                            <textarea id="input_description"  type="text" value={taskInfo.description}
+                            className="form-control" onChange={addDescription}  placeholder="This is the task one"></textarea>
                             <br></br>
                             <label htmlFor="input_date" className=" font">Set limit date</label>
                             <input id="input_date" onChange={addLimitDate} value={taskInfo.limit_date} type="date" className="form-control" placeholder="Task one"></input>
@@ -200,7 +267,7 @@ function Home({onLogout, onToast}){
                                     </svg>
 
                             }
-                                Add
+                                {textbutton}
                             </button>
                         </div>
                     </div>
