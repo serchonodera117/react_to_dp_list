@@ -44,7 +44,7 @@ function App() {
 
   return (
     <div className="bodyContainer backgroundContainer">
-      { (isLoged == true) ? <Home onLogout={changeState}/> :
+      { (isLoged == true) ? <Home onLogout={changeState} onToast={displayToast}/> :
        <Login onLogin={changeState} onToast={displayToast}/>}
 
 

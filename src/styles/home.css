@@ -121,7 +121,6 @@
     width: 40px;
     text-align: center;
     padding: 1px;
-    z-index: 1;
     right: 15%;
     bottom: 12%;
     transition: 0.3s ease-in;
@@ -137,9 +136,35 @@
 .btn-plus svg{
     width: 30px;
     height: 30px;
+    margin-top: 5px;
     transition: 0.2s ease-in;
-}.btn-plus:hover svg{
+}
+
+.btn-plus:hover svg{
     transform: rotate(90deg);
+}
+
+.modal-container:has(#check-modal:checked) .btn-plus svg{
+    animation: checking 1s infinite;
+}
+
+#check-modal:checked ~#modal-add{
+    display: block;
+}
+
+.btn-cancel{
+    color: white;
+    border-radius: 5px;
+    padding: 2px 15px 2px 15px;
+    background-color: rgba(158, 11, 11, 0.774);
+    backdrop-filter: blur(10px);
+}.btn-add{
+    border-radius: 5px;
+    background-color: rgba(139, 61, 228, 0.774);
+    color: white;
+    padding: 2px 15px 2px 15px;
+    backdrop-filter: blur(10px);
+
 }
 .container-options{
     width: 15%;
@@ -170,6 +195,15 @@
     margin-top:1rem;
     border: 1px solid rgba(175, 140, 140, 0.7);
     margin-right: 15px;
+}
+
+
+@keyframes checking{
+    0%{transform: rotate(0)}
+    25%{transform: rotate(45deg);}
+    50%{transform: rotate(0);}
+    75%{transform: rotate(-90deg);}
+    100%{transform: rotate(0deg);}
 }
 @media only screen and (max-width: 500px){
     .card-container{

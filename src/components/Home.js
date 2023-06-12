@@ -4,16 +4,25 @@ import { useState, useEffect } from 'react';
 import '../styles/app.css';
 import logo from '../logo.svg';
 import '../styles/home.css';
-import 'bootstrap/dist/js/bootstrap.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 import { Button } from 'bootstrap';
 
-function Home({onLogout}){
+function Home({onLogout, onToast}){
     const [userData, setUserData] = useState({id_user:'', username:'', user_img:'', password:'',});
     const [visitedDate, setVisitedDate] = useState('')
     const [arrayPeticiones, setArrayPeticiones] = useState([])
+    const [modalTitle, setModalTitle] = useState('')
+    const [httpRequestCode, setHttpRequestCode] = useState('')
+    const [taskInfo, setTaskInfo] = useState({
+        task_name:'',
+        description:'',
+        current_date:'',
+        limit_date:''})
 
     useEffect(()=>{
+        setModalTitle("Add new task")
+        setHttpRequestCode('add')
         let data = JSON.parse(localStorage.getItem('userdata'))
         if(data!==null){
             setUserData(e =>({...e, 
@@ -42,7 +51,9 @@ function Home({onLogout}){
         localStorage.removeItem('userdata')
         onLogout();
     }
-
+    function setOnToast(message) {
+        onToast(message)
+    }
     function setDate(){
         let d = new Date();
         let month = ["junary", "febrary", "march", "april", "may", "jun", "july", "august", "september", "october", "november", "december"]
@@ -51,6 +62,52 @@ function Home({onLogout}){
         setVisitedDate(formatedDate);
     }
 
+    //CHANGE INFO
+    function addName(e) {
+        let {name, value} = e.target;
+        setTaskInfo(task =>({...task, task_name: value}))
+    }
+    function addDescription(e) {
+        let {descrpition, value} = e.target;
+        setTaskInfo(task =>({...task, description: value}))
+    }
+    function addLimitDate(e) {
+        let {lDate, value} = e.target;
+        setTaskInfo(task =>({...task, limit_date: value}))
+    }
+
+    function changeModalTitle(Title, obj){
+        if(obj.type == "add"){
+            setHttpRequestCode('add')
+            setModalTitle(Title)
+        }else if(obj.type=="edit"){
+            setHttpRequestCode('edit')
+        }else if(obj.type='delete'){
+            setHttpRequestCode('delete')
+        }
+    }
+    // HTTP REQUESTS
+     function addTask(){
+        let url = `https://myfavnime.000webhostapp.com/todo_list/tasks.php`
+        let current_date = new Date();
+        let close_button = document.getElementById('close_btn')
+        let data = {
+            code: httpRequestCode,
+            id_usuario: userData.id_user,
+            task_name: taskInfo.task_name,
+            description: taskInfo.description,
+            current_date: current_date.getFullYear()+'-'+(current_date.getMonth()+1)+'-'+current_date.getDate(),
+            limit_date: taskInfo.limit_date,
+        }
+
+        Axios.post(url, JSON.stringify(data)).then((response) =>{
+            if(response.data.status == 200){
+                setOnToast(response.data.message)
+                close_button.click()
+            }
+        })
+
+     }
     return (
         <div className="container-home">
             <div className="user-info-container  text-centered">
@@ -98,12 +155,59 @@ function Home({onLogout}){
                         )
                     )}
                 </div>
-                <button className='btn-plus'>
+            </div>
+
+            <div className="modal-container">
+                <label htmlFor="check-modal" onClick={()=> changeModalTitle("Add new task", {type:'add'})} className='btn-plus'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-lg" viewBox="0 0 16 16">
                     <path fillRule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
                     </svg>
-                </button>
+                </label>
+                <input id="check-modal" type="checkbox" className="hidden-checkbox"></input>
+
+                <div className="modal" id="modal-add" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div className=" modal-dialog">
+                    <div className="modal-content modal-color">
+                        <div className="modal-header">
+                            <h1 className="modal-title fs-5" id="exampleModalLabel">{modalTitle}</h1>
+                            <label type="button" id="close_btn" htmlFor='check-modal' className="btn-close" data-bs-dismiss="modal" aria-label="Close"></label>
+                        </div>
+                        <div className="modal-body">
+                            <label htmlFor="input_taskname" className="font">Task Name</label>
+                            <input id="input_taskname" onChange={addName} type="text" className="form-control" 
+                            placeholder="Task one" value={taskInfo.task_name}></input>
+                            <br></br>
+                            <label htmlFor="input_description" className=" font">Description</label>
+                            <textarea id="input_description"  type="text" 
+                            className="form-control" onChange={addDescription} placeholder="This is the task one" value={taskInfo.descrition}></textarea>
+                            <br></br>
+                            <label htmlFor="input_date" className=" font">Set limit date</label>
+                            <input id="input_date" onChange={addLimitDate} value={taskInfo.limit_date} type="date" className="form-control" placeholder="Task one"></input>
+                            <br></br>
+                        </div>
+                        <div className="modal-footer">
+                            <label htmlFor='check-modal' className='btn-cancel'>Cancel </label>
+                            <button  className='btn-add' onClick={addTask}  disabled={
+                                    (!taskInfo.task_name.trim() || !taskInfo.description.trim() || !taskInfo.limit_date.trim())?true:false
+                            }>{
+                                    (!taskInfo.task_name.trim() || !taskInfo.description.trim() || !taskInfo.limit_date.trim())?
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-lock-fill" viewBox="0 0 16 16">
+                                            <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                                        </svg>
+                                    :
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-cursor-fill" viewBox="0 0 16 16">
+                                    <path d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"/>
+                                    </svg>
+
+                            }
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                </div>
             </div>
+
         </div>
     );
 }

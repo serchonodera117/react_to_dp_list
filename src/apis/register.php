@@ -31,7 +31,7 @@ if($nombre!='' && $contrasena!='' && $imagenUsuario!=''){
     echo json_encode ($response);
 }
  else{
-     $sql = "INSERT INTO myUser (USERNAME,  user_img, password)
+     $sql = "INSERT INTO myUser (username,  user_img, password)
        VALUES ('$nombre',  '$imagenUsuario','$contrasena')";
         if ($conn->query($sql) === TRUE) {
             $response = array(
