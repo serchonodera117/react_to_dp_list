@@ -120,7 +120,7 @@ function Home({onLogout, onToast}){
             id_usuario: userData.id_user,
             task_name: taskInfo.task_name,
             description: taskInfo.description,
-            current_date: current_date.getFullYear()+'-'+(current_date.getMonth()+1)+'-'+current_date.getDate(),
+            current_date: current_date.getFullYear()+'-'+(current_date.getMonth()+1)+'-'+current_date.getDate()  +" "+current_date.getHours() +":"+ current_date.getMinutes(),
             limit_date: taskInfo.limit_date,
         }
 
@@ -259,7 +259,7 @@ function Home({onLogout, onToast}){
                                 </label>
                             <br></br>
                             <label htmlFor="input_date" className=" font">Set limit date</label>
-                            <input id="input_date" onChange={addLimitDate} value={taskInfo.limit_date} type="date" className="form-control" placeholder="Task one"></input>
+                            <input id="input_date" onChange={addLimitDate} value={taskInfo.limit_date} type="datetime-local" className="form-control" placeholder="Task one"></input>
                             <br></br>
                         </div>
                         <div className="modal-footer">
