@@ -112,7 +112,13 @@
     width: 30%;
 }
 .description-container{
+    overflow: hidden;
     width: 55%;
+    height: 100%;
+    word-break: break-word;
+}.descrption{
+    height: 100%;
+    overflow-y:scroll;
 }
 .btn-plus{
     border-radius: 50px;
@@ -227,7 +233,10 @@
     border: 1px solid rgba(175, 140, 140, 0.7);
     margin-right: 15px;
 }
-
+.alert{
+    color:red;
+    font-size: 12px!important;
+}
 .task-name{
     font-size: 20px;
     font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -240,6 +249,9 @@
     50%{transform: rotate(0);}
     75%{transform: rotate(-90deg);}
     100%{transform: rotate(0deg);}
+}
+.indicator-char{
+    font-size:10px;
 }
 @media only screen and (max-width: 920px){
     .card-container{

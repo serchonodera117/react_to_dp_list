@@ -190,7 +190,7 @@ function Home({onLogout, onToast}){
                                </div>
                                <div className="description-container">
                                    <span>Limit: {element.limit_date}</span><br></br>
-                                   <span>{element.description}</span>
+                                   <span className="description">{element.description}</span>
                                </div>
                                <div className='container-options'>
                                    <img  className='icon-react' src={logo}></img>
@@ -240,13 +240,23 @@ function Home({onLogout, onToast}){
                             <label type="button" id="close_btn" htmlFor='check-modal' className="btn-close" data-bs-dismiss="modal" aria-label="Close"></label>
                         </div>
                         <div className="modal-body">
-                            <label htmlFor="input_taskname" className="font">Task Name</label>
-                            <input id="input_taskname" onChange={addName} type="text" className="form-control" 
+                            <label htmlFor="input_taskname" className="font" >Task Name</label>
+                            <input id="input_taskname" onChange={addName} maxlength="50" type="text" className="form-control" 
                             placeholder="Task one" value={taskInfo.task_name}></input>
+                            <label className="indicator-char">{taskInfo.task_name.length}/50  {
+                            taskInfo.task_name.length>=50? <small className="alert">You can't write more than 50 characters</small>:""
+                            }
+                            </label>
                             <br></br>
-                            <label htmlFor="input_description" className=" font">Description</label>
-                            <textarea id="input_description"  type="text" value={taskInfo.description}
-                            className="form-control" onChange={addDescription}  placeholder="This is the task one"></textarea>
+                            <label htmlFor="input_description" className=" font" >Description</label>
+                            <textarea id="input_description"  type="text" maxlength="500" value={taskInfo.description}
+                            className="form-control" onChange={addDescription}  placeholder="This is the task one">
+                            </textarea>
+                                <label className="indicator-char">{taskInfo.description.length}/500
+                                   {
+                                    taskInfo.description.length>=500 ? <small className="alert">You can't write more than 500 characters</small>:""
+                                     }
+                                </label>
                             <br></br>
                             <label htmlFor="input_date" className=" font">Set limit date</label>
                             <input id="input_date" onChange={addLimitDate} value={taskInfo.limit_date} type="date" className="form-control" placeholder="Task one"></input>
