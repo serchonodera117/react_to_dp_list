@@ -46,7 +46,15 @@ function Home({onLogout, onToast}){
         Axios.get(url).then((response)=>{
             if(response.data.status == 200){
                 let tasks = response.data.tasks.reverse();
-                setArrayPeticiones(tasks)
+                
+               let sortedT = tasks.sort((item, itemNext) => {
+                   let previousDate = new Date(item.date_published)
+                   let nextDate = new Date(itemNext.date_published)
+                   
+                    return (nextDate - previousDate)
+                })
+                
+                setArrayPeticiones(sortedT)
                 if(tasks.length <1){
                     setOnToast(response.data.message)
                 }
@@ -241,7 +249,7 @@ function Home({onLogout, onToast}){
                         </div>
                         <div className="modal-body">
                             <label htmlFor="input_taskname" className="font" >Task Name</label>
-                            <input id="input_taskname" onChange={addName} maxlength="50" type="text" className="form-control" 
+                            <input id="input_taskname" onChange={addName} maxLength="50" type="text" className="form-control" 
                             placeholder="Task one" value={taskInfo.task_name}></input>
                             <label className="indicator-char">{taskInfo.task_name.length}/50  {
                             taskInfo.task_name.length>=50? <small className="alert">You can't write more than 50 characters</small>:""
@@ -249,7 +257,7 @@ function Home({onLogout, onToast}){
                             </label>
                             <br></br>
                             <label htmlFor="input_description" className=" font" >Description</label>
-                            <textarea id="input_description"  type="text" maxlength="500" value={taskInfo.description}
+                            <textarea id="input_description"  type="text" maxLength="500" value={taskInfo.description}
                             className="form-control" onChange={addDescription}  placeholder="This is the task one">
                             </textarea>
                                 <label className="indicator-char">{taskInfo.description.length}/500
